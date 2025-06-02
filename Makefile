@@ -15,6 +15,8 @@ SRCS := $(foreach dir,$(SRCS_DIR),$(wildcard $(dir)/*.c) $(wildcard $(dir)/*.S))
 OBJS := $(SRCS:.c=.o)
 OBJS := $(OBJS:.S=.o)
 
+INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/drivers
+
 TARGET = main
 
 # variable for linker scrtip, map file and the readelf output
@@ -53,7 +55,7 @@ main.elf: $(OBJS) $(LD_SCRIPT)
 
 %.o: %.c
 	@echo "Compiling $< to $@"
-	@$(GCC) -mapcs-frame -mcpu=cortex-m4 -mlittle-endian -mthumb -Wall -c -g -O1 $< -o $@
+	@$(GCC) $(INCLUDES) -mapcs-frame -mcpu=cortex-m4 -mlittle-endian -mthumb -Wall -c -g -O1 $< -o $@
 
 %.o: %.S
 	@echo "Assembling $< to $@"

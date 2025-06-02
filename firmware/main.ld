@@ -3,7 +3,7 @@ ENTRY(reset_handler)
 
 MEMORY
 {
-  FLASH (rx)  : ORIGIN = 0x00000000, LENGTH = 0x40000 /* 256k */ /* 0x20000 128K */
+  FLASH (rx)  : ORIGIN = 0x00000000, LENGTH = 0x40000 /* 256k */
   RAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 0x8000 /* 32k */
 }
 
@@ -12,7 +12,8 @@ SECTIONS
 {
   .text :
   {
-    KEEP(*(.isr_vector)) /* Interrupt vector table */
+    KEEP(*(.int_vector_table)) /* Interrupt vector table */
+    KEEP(*(.external_interrupts_table)) /* External interrupts table */
     *(startup_code) /* Startup code */
     *(.text*)            /* All text sections */
     *(.rodata*)         /* Read-only data */
@@ -58,7 +59,7 @@ SECTIONS
     . += 0x2000; /* Reserve 8k for main stack pointer */
     _stack_end = .; /* End of stack */
     _stack_process_start = .; /* Start of process stack */
-    . += 0x1000; /* Reserve 1K for process stack pointer */
+    . += 0x400; /* Reserve 1k for process stack pointer */
     _stack_process_end = .; /* End of process stack */
   } > RAM
 

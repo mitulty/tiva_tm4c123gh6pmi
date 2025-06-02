@@ -1,8 +1,8 @@
 #include "int_vector_table.h"
+#include "cm4_defines.h"
 
 extern uint32_t _stack_end;      // Defined in the linker script
 extern void reset_handler(void); // Defined in the startup code
-
 
 void default_handler(void)
 {
@@ -13,17 +13,21 @@ void default_handler(void)
     }
 }
 
-uint32_t *__attribute__((section(".isr_vector"))) isr_vector[] = {
-    (uint32_t *)&_stack_end,        // Initial stack pointer
-    (uint32_t *)reset_handler,      // Reset Handler
-    (uint32_t *)NMI_Handler,        // NMI Handler
-    (uint32_t *)HardFault_Handler,  // Hard Fault Handler
-    (uint32_t *)MemManage_Handler,  // Memory Management Fault Handler
-    (uint32_t *)BusFault_Handler,   // Bus Fault Handler
-    (uint32_t *)UsageFault_Handler, // Usage Fault Handler
-    0, 0, 0, 0,                     // Reserved
-    (uint32_t *)SVC_Handler,        // SVC Handler
-    0,                              // Reserved
-    0,                              // Reserved
-    0,                              // Reserved
+// Array to hold custom interrupt handlers
+ISRHandler __attribute__((section(".external_interrupts_table"))) externalInterrupt[240] = {[0 ... 239] = default_handler};
+
+ISRHandler __attribute__((section(".int_vector_table"))) int_vector_table[] = {
+    (ISRHandler)&_stack_end, // Initial stack pointer
+    reset_handler,           // Reset Handler
+    NMI_Handler,             // NMI Handler
+    HardFault_Handler,       // Hard Fault Handler
+    MemManage_Handler,       // Memory Management Fault Handler
+    BusFault_Handler,        // Bus Fault Handler
+    UsageFault_Handler,      // Usage Fault Handler
+    0, 0, 0, 0,              // Reserved
+    SVC_Handler,             // SVC Handler
+    Debug_Handler,           // Reserved
+    0,                       // Reserved
+    PendSV_Handler,          // PendSV Handler
+    SysTick_Handler,         // SysTick Handler
 };
