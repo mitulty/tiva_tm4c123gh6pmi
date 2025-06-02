@@ -8,7 +8,7 @@ OBJCOPY   = arm-none-eabi-objcopy
 SYMBOL    = arm-none-eabi-nm
 
 # Variables for source files and object files
-SRCS_DIR  = firmware startup_code drivers
+SRCS_DIR  = firmware firmware/ivt firmware/nvic startup_code drivers
 # Collect all source files from the specified directories
 SRCS := $(foreach dir,$(SRCS_DIR),$(wildcard $(dir)/*.c) $(wildcard $(dir)/*.S))
 # Convert .c and .asm files to .o files
@@ -53,7 +53,7 @@ main.elf: $(OBJS) $(LD_SCRIPT)
 
 %.o: %.c
 	@echo "Compiling $< to $@"
-	@$(GCC) -mapcs-frame -mcpu=cortex-m4 -mlittle-endian -mthumb -Wall -c -g -Os $< -o $@
+	@$(GCC) -mapcs-frame -mcpu=cortex-m4 -mlittle-endian -mthumb -Wall -c -g -O1 $< -o $@
 
 %.o: %.S
 	@echo "Assembling $< to $@"
@@ -61,12 +61,9 @@ main.elf: $(OBJS) $(LD_SCRIPT)
 
 
 clean:
-	rm -f *.o *.elf* *.txt *.map *.log *.bin firmware/*.o firmware/*.elf* firmware/*.txt firmware/*.map \
-	firmware/*.bin drivers/*.o drivers/*.elf drivers/*.txt drivers/*.map drivers/*.s drivers/*.bin \
-	startup_code/*.o startup_code/*.elf* startup_code/*.txt startup_code/*.map startup_code/*.bin
 	rm -f $(READELF_OUT) mainobjdump symbolgen
 	rm -f $(TARGET).elf $(LD_MAP) $(TARGET).txt
-	rm -f $(OBJS)
+	rm -f $(OBJS) $(TARGET).bin
 	@echo "Cleaned up all generated files."
 
 .PHONY: clean mainobjdump all
