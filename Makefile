@@ -8,8 +8,12 @@ OBJCOPY   = arm-none-eabi-objcopy
 SYMBOL    = arm-none-eabi-nm
 
 # Directories and includes
-SRCS_DIR := firmware firmware/ivt firmware/nvic startup_code drivers FreeRTOS-Kernel FreeRTOS-Kernel/portable/GCC/ARM_CM4F
-INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/drivers -IFreeRTOS-Kernel/include -IFreeRTOS-Kernel/portable/GCC/ARM_CM4F
+SRCS_DIR := firmware firmware/ivt firmware/nvic startup_code drivers 
+SRCS_DIR += FreeRTOS-Kernel/portable/MemMang FreeRTOS-Kernel FreeRTOS-Kernel/portable/GCC/ARM_CM4F
+
+INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/drivers -IFreeRTOS-Kernel/include
+INCLUDES += -IFreeRTOS-Kernel/portable/GCC/ARM_CM4F
+
 OBJ_DIR = obj
 
 # Flags
@@ -67,7 +71,7 @@ $(OBJ_DIR)/%.o: %.S
 
 # Clean target
 clean:
-	rm -rf $(OBJ_DIR) *.elf *.bin *.map *.s *.txt
+	rm -rf $(OBJ_DIR) *.elf *.bin *.map *.s *.txt *.map
 	@echo "Cleaned."
 
 .PHONY: all clean mainobjdump symbolgen
