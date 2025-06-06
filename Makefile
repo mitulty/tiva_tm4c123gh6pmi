@@ -1,71 +1,73 @@
-# Variables for utilities
+# Toolchain
 GCC       = arm-none-eabi-gcc
-LD        = arm-none-eabi-ld
+LD        = arm-none-eabi-gcc  # Use GCC for linking
 AS        = arm-none-eabi-as
 READELF   = arm-none-eabi-readelf
 OBJDUMP   = arm-none-eabi-objdump
 OBJCOPY   = arm-none-eabi-objcopy
 SYMBOL    = arm-none-eabi-nm
 
-# Variables for source files and object files
-SRCS_DIR  = firmware firmware/ivt firmware/nvic startup_code drivers
-# Collect all source files from the specified directories
-SRCS := $(foreach dir,$(SRCS_DIR),$(wildcard $(dir)/*.c) $(wildcard $(dir)/*.S))
-# Convert .c and .asm files to .o files
-OBJS := $(SRCS:.c=.o)
-OBJS := $(OBJS:.S=.o)
+# Directories and includes
+SRCS_DIR := firmware firmware/ivt firmware/nvic startup_code drivers FreeRTOS-Kernel FreeRTOS-Kernel/portable/GCC/ARM_CM4F
+INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/drivers -IFreeRTOS-Kernel/include -IFreeRTOS-Kernel/portable/GCC/ARM_CM4F
+OBJ_DIR = obj
 
-INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/drivers
+# Flags
+C_DEFINES := -D__VFP_FP__ -D__NVIC_PRIO_BITS=4 
+CFLAGS = -mcpu=cortex-m4 -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wall -g -O2 -ffreestanding -nostdlib
+ASFLAGS = $(CFLAGS)
 
+# Files
 TARGET = main
-
-# variable for linker scrtip, map file and the readelf output
 LD_SCRIPT   = firmware/$(TARGET).ld
 LD_MAP      = $(TARGET).map
-READELF_OUT = $(TARGET).txt
+READELF_OUT = $(TARGET).elf.s
 
-build: $(TARGET).elf
-# Default target to build the project
-	@echo "Building the project..."
+# Source and object files
+SRC_C = $(foreach dir, $(SRCS_DIR), $(wildcard $(dir)/*.c))
+SRC_S = $(foreach dir, $(SRCS_DIR), $(wildcard $(dir)/*.S))
+SRC_ALL = $(SRC_C) $(SRC_S)
 
-# this is executed on running 'make'
+OBJ_FILES = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC_C))
+OBJ_FILES += $(patsubst %.S, $(OBJ_DIR)/%.o, $(SRC_S))
+
+# Default target
 all: $(READELF_OUT) mainobjdump symbolgen
-	@
 
-#genrates objdump of main.elf
+# Linking
+$(TARGET).elf: $(OBJ_FILES) $(LD_SCRIPT)
+	@echo "Linking..."
+	$(LD) $(CFLAGS) $(OBJ_FILES) -T$(LD_SCRIPT) -Wl,-Map=$(LD_MAP),--gc-sections -o $(TARGET).elf
+	$(OBJCOPY) -O binary $@ $(TARGET).bin
+	@echo "Build complete: $@"
+
+# Generate objdump
 mainobjdump: $(TARGET).elf
 	$(OBJDUMP) -D $< > $<.s
 
-#generates symbol
+# Generate symbols
 symbolgen: $(TARGET).elf
 	$(SYMBOL) $< 
 
-# generates the log
+# Generate readelf output
 $(READELF_OUT): $(TARGET).elf
 	$(READELF) -a $^ > $@
 
-# output file
-main.elf: $(OBJS) $(LD_SCRIPT)
-	@echo "Source files: $(SRCS)"
-	@echo "Object files: $(OBJS)"
-	$(LD) -T$(LD_SCRIPT) -Map=$(LD_MAP) -o $@ $(OBJS)
-	$(OBJCOPY) -O binary $@ $(TARGET).bin
-	@echo "Linking complete: $@"
-	@echo "Map file generated: $(LD_MAP)"
+# Compile C files
+$(OBJ_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	@echo "Compiling $<..."
+	$(GCC) $(INCLUDES) $(C_DEFINES) $(CFLAGS) -c $< -o $@
 
-%.o: %.c
-	@echo "Compiling $< to $@"
-	@$(GCC) $(INCLUDES) -mapcs-frame -mcpu=cortex-m4 -mlittle-endian -mthumb -Wall -c -g -O1 $< -o $@
+# Assemble .S files
+$(OBJ_DIR)/%.o: %.S
+	@mkdir -p $(dir $@)
+	@echo "Assembling $<..."
+	$(GCC) $(INCLUDES) $(C_DEFINES) $(ASFLAGS) -c $< -o $@
 
-%.o: %.S
-	@echo "Assembling $< to $@"
-	@$(GCC) -mcpu=cortex-m4 -mlittle-endian -mthumb -Wall -c -g $< -o $@
-
-
+# Clean target
 clean:
-	rm -f $(READELF_OUT) mainobjdump symbolgen
-	rm -f $(TARGET).elf $(LD_MAP) $(TARGET).txt
-	rm -f $(OBJS) $(TARGET).bin
-	@echo "Cleaned up all generated files."
+	rm -rf $(OBJ_DIR) *.elf *.bin *.map *.s *.txt
+	@echo "Cleaned."
 
-.PHONY: clean mainobjdump all
+.PHONY: all clean mainobjdump symbolgen
