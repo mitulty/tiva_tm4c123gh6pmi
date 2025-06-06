@@ -42,15 +42,15 @@ SECTIONS
     _bss_start = .;    /* Start of BSS section */
     *(.bss*)            /* Uninitialized data sections */
     _bss_end = .;      /* End of BSS section */
-  } > RAM
+  } > RAM AT > RAM
 
   .heap (NOLOAD) :
   {
     . = ALIGN(4); /* Align to 4 bytes */
     _heap_start = .; /* Start of heap */
-    . += 0x2000; /* Reserve 8k for heap */
+    *(.heap*)           /* Heap sections */
     _heap_end = .; /* End of heap */
-  } > RAM
+  } > RAM AT > RAM
 
   .stack (NOLOAD) :
   {
@@ -61,13 +61,12 @@ SECTIONS
     _stack_process_start = .; /* Start of process stack */
     . += 0x400; /* Reserve 1k for process stack pointer */
     _stack_process_end = .; /* End of process stack */
-  } > RAM
+  } > RAM AT > RAM
 
 /* Discard unused sections */
 
-/* 
+
   /DISCARD/ : { 
               *(*)
-              } */
-
+              }
 }
