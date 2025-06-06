@@ -65,8 +65,8 @@ SECTIONS
 
 /* Discard unused sections */
 
-
+/* 
   /DISCARD/ : { 
               *(*)
-              }
+              } */
 }

@@ -8,12 +8,11 @@ OBJCOPY   = arm-none-eabi-objcopy
 SYMBOL    = arm-none-eabi-nm
 
 # Directories and includes
-SRCS_DIR := firmware firmware/ivt firmware/nvic startup_code drivers 
+SRCS_DIR := firmware firmware/ivt firmware/nvic firmware/systick startup_code drivers 
 SRCS_DIR += FreeRTOS-Kernel/portable/MemMang FreeRTOS-Kernel FreeRTOS-Kernel/portable/GCC/ARM_CM4F
 
-INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/drivers -IFreeRTOS-Kernel/include
-INCLUDES += -IFreeRTOS-Kernel/portable/GCC/ARM_CM4F
-
+INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/systick
+INCLUDES += -IFreeRTOS-Kernel/portable/GCC/ARM_CM4F -IFreeRTOS-Kernel/include
 OBJ_DIR = obj
 
 # Flags
@@ -38,10 +37,15 @@ OBJ_FILES += $(patsubst %.S, $(OBJ_DIR)/%.o, $(SRC_S))
 # Default target
 all: $(READELF_OUT) mainobjdump symbolgen
 
+executable: $(TARGET).elf
+	@echo "Generating executable..."
+	$(OBJCOPY) -O binary $(TARGET).elf $(TARGET).bin
+
 # Linking
 $(TARGET).elf: $(OBJ_FILES) $(LD_SCRIPT)
 	@echo "Linking..."
-	$(LD) $(CFLAGS) $(OBJ_FILES) -T$(LD_SCRIPT) -Wl,-Map=$(LD_MAP),--gc-sections -o $(TARGET).elf
+	# $(LD) $(CFLAGS) $(OBJ_FILES) -T$(LD_SCRIPT) -Wl,-Map=$(LD_MAP),--gc-sections -o $(TARGET).elf
+	$(LD) $(CFLAGS) $(OBJ_FILES) -T$(LD_SCRIPT) -Wl,-Map=$(LD_MAP) -o $(TARGET).elf
 	$(OBJCOPY) -O binary $@ $(TARGET).bin
 	@echo "Build complete: $@"
 
