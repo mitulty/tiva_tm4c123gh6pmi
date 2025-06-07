@@ -19,14 +19,14 @@ OBJ_DIR = obj
 
 # Flags
 C_DEFINES := -D__VFP_FP__ -D__NVIC_PRIO_BITS=4 
-CFLAGS = -mcpu=cortex-m4 -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wall -g -O2 -ffreestanding -nostdlib
+CFLAGS = -mcpu=cortex-m4 -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wall -ffreestanding -nostdlib
 ASFLAGS = $(CFLAGS)
 
 # Files
 TARGET = main
 LD_SCRIPT   = firmware/$(TARGET).ld
 LD_MAP      = $(TARGET).map
-READELF_OUT = $(TARGET).elf.s
+READELF_OUT = $(TARGET).txt
 
 # Source and object files
 SRC_C = $(foreach dir, $(SRCS_DIR), $(wildcard $(dir)/*.c))
@@ -35,6 +35,13 @@ SRC_ALL = $(SRC_C) $(SRC_S)
 
 OBJ_FILES = $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRC_C))
 OBJ_FILES += $(patsubst %.S, $(OBJ_DIR)/%.o, $(SRC_S))
+
+PROFILE = release
+ifeq ($(PROFILE), debug)
+CFLAGS += -DDEBUG -g -O0
+else
+CFLAGS += -DNDEBUG -O2
+endif
 
 # Default target
 all: $(READELF_OUT) mainobjdump symbolgen
