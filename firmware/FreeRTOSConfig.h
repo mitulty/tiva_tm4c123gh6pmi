@@ -7,13 +7,13 @@
 /* Hardware description related definitions. **********************************/
 /******************************************************************************/
 
-#define configCPU_CLOCK_HZ    ( ( unsigned long ) 80000000 )
+#define configCPU_CLOCK_HZ    ( ( unsigned long ) 16000000 )
 
 /******************************************************************************/
 /* Scheduling behaviour related definitions. **********************************/
 /******************************************************************************/
 
-#define configTICK_RATE_HZ                         ( (portTickType) 1000U )
+#define configTICK_RATE_HZ                         ( (portTickType) 10U )
 #define configUSE_PREEMPTION                       1
 #define configUSE_TIME_SLICING                     1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION    0

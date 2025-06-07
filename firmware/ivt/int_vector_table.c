@@ -4,6 +4,10 @@
 extern uint32_t _stack_end;      // Defined in the linker script
 extern void reset_handler(void); // Defined in the startup code
 
+extern void xPortPendSVHandler(void);
+extern void xPortSysTickHandler(void);
+extern void vPortSVCHandler(void);
+
 void default_handler(void)
 {
     // Default handler for unhandled interrupts
@@ -25,9 +29,9 @@ ISRHandler __attribute__((section(".int_vector_table"))) int_vector_table[] = {
     BusFault_Handler,        // Bus Fault Handler
     UsageFault_Handler,      // Usage Fault Handler
     0, 0, 0, 0,              // Reserved
-    SVC_Handler,             // SVC Handler
+    vPortSVCHandler,         // SVC Handler
     Debug_Handler,           // Reserved
     0,                       // Reserved
-    PendSV_Handler,          // PendSV Handler
-    SysTick_Handler,         // SysTick Handler
+    xPortPendSVHandler,      // PendSV Handler
+    xPortSysTickHandler,     // SysTick Handler
 };
