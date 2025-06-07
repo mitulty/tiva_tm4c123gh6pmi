@@ -48,7 +48,7 @@ SECTIONS
   {
     . = ALIGN(4); /* Align to 4 bytes */
     _heap_start = .; /* Start of heap */
-    *(.heap*)           /* Heap sections */
+    . += 0x2000; /* Reserve 8k for main stack pointer */
     _heap_end = .; /* End of heap */
   } > RAM AT > RAM
 
