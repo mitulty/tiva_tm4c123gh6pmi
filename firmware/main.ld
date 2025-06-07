@@ -30,7 +30,7 @@ SECTIONS
   .data :
   {
     . = ALIGN(4); /* Align to 4 bytes */
-    _data_ram_start = LOADADDR(.data); /* Start of data in FLASH */
+    _data_ram_start = .; /* Start of data in FLASH */
     /* _data_ram_start = .; */ /* Start of data in RAM */
     *(.data*)           /* Initialized data sections */
     _data_ram_end = .; /* End of data in RAM */

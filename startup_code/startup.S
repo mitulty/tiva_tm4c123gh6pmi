@@ -35,8 +35,11 @@ reset_handler:
     and r0, r0, #0x0     // Clear the SP (Stack Pointer) bit
     msr control, r0      // Write back to the control register
 
+    // Initialize .data and .bss sections
+    bl section_init
+ 
     // Call the main function
     bl main
-    // If main returns, enter an infinite loop
 
+    // If main returns, enter an infinite loop
     b .
