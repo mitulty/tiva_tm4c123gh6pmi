@@ -1,10 +1,10 @@
 #include "stdint.h"
 
-extern char _data_flash_start;
-extern char _data_ram_start;
-extern char _data_ram_end;
-extern char _bss_start;
-extern char _bss_end;
+extern uint32_t _data_flash_start;
+extern uint32_t _data_ram_start;
+extern uint32_t _data_ram_end;
+extern uint32_t _bss_start;
+extern uint32_t _bss_end;
 
 /**
  * @brief Initializes the data and BSS sections of the system.
