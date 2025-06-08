@@ -14,7 +14,7 @@ static void vTask1(void *pvParameters)
         GPIO_SetPin(GPIO_PORTF, GPIO_PIN_2, 0); // Set PF2 low
         GPIO_SetPin(GPIO_PORTF, GPIO_PIN_1, 1); // Set PF1 high
         // systick_delay(500);                     // Delay for 500 ms
-        // vTaskDelay(pdMS_TO_TICKS(1000));        // Delay for 1000 ms
+        vTaskDelay(pdMS_TO_TICKS(1000));        // Delay for 1000 ms
         // GPIO_SetPin(GPIO_PORTF, GPIO_PIN_1, 0); // Set PF1 low
         // vTaskDelay(pdMS_TO_TICKS(500));        // Delay for 1000 ms
         // systick_delay(500);
@@ -27,11 +27,11 @@ static void vTask2(void *pvParameters)
     {
         GPIO_SetPin(GPIO_PORTF, GPIO_PIN_1, 0); // Set PF1 low
         GPIO_SetPin(GPIO_PORTF, GPIO_PIN_2, 1); // Set PF2 high
-        // systick_delay(500);                     // Delay for 500 ms
+        systick_delay(500);                     // Delay for 500 ms
         // vTaskDelay(pdMS_TO_TICKS(1000));        // Delay for 1000 ms
-        // GPIO_SetPin(GPIO_PORTF, GPIO_PIN_2, 0); // Set PF2 low
+        GPIO_SetPin(GPIO_PORTF, GPIO_PIN_2, 0); // Set PF2 low
         // vTaskDelay(pdMS_TO_TICKS(500));        // Delay for 1000 ms
-        // systick_delay(500);
+        systick_delay(500);
     }
 }
 
@@ -58,7 +58,7 @@ int main()
     // The tasks will use FreeRTOS delay functions to manage timing
     // The tasks will run at priority 1, which is a low priority
     // The tasks will run indefinitely in a loop
-    result1 = xTaskCreate(vTask1, "Task 1", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    result1 = xTaskCreate(vTask1, "Task 1", configMINIMAL_STACK_SIZE, NULL, 2, NULL);
     result2 = xTaskCreate(vTask2, "Task 2", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     if (result1 != pdPASS || result2 != pdPASS)
     {
