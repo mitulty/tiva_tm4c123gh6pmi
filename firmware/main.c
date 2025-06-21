@@ -1,9 +1,7 @@
 #include "cm4_defines.h"
-#include "stdint.h"
 #include "FreeRTOS.h"
-#include "gpio.h"
-#include "systick.h"
 #include "task.h"
+#include "driver_headers.h"
 
 __attribute__((section(".heap"))) uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 
@@ -14,7 +12,7 @@ static void vTask1(void *pvParameters)
         GPIO_SetPin(GPIO_PORTF, GPIO_PIN_2, 0); // Set PF2 low
         GPIO_SetPin(GPIO_PORTF, GPIO_PIN_1, 1); // Set PF1 high
         // systick_delay(500);                     // Delay for 500 ms
-        vTaskDelay(pdMS_TO_TICKS(1000));        // Delay for 1000 ms
+        vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1000 ms
         // GPIO_SetPin(GPIO_PORTF, GPIO_PIN_1, 0); // Set PF1 low
         // vTaskDelay(pdMS_TO_TICKS(500));        // Delay for 1000 ms
         // systick_delay(500);
@@ -50,8 +48,13 @@ int main()
     GPIO_SetPortLock(GPIO_PORTF, 1);         // Unlock Port F
     GPIO_SetPortConfig(GPIO_PORTF, 0x01);    // Configure Port F for PF1
     GPIO_SetDigitalEnable(GPIO_PORTF, 1);    // Enable digital function for Port F
-    GPIO_SetPortDirection(GPIO_PORTF, 0x06); // Set PF1 as output (0x02 = 0000 0010)
+    GPIO_SetPortDirection(GPIO_PORTF, 0x06); // Set PF1 as output (0x06 = 0000 0110)
 
+    UART_Init(UART_PORT_5);                                    // Initialize UART5
+    UART_configure(UART_PORT_5);                               // Configure UART5 settings
+    UART_SendString(UART_PORT_5, "FreeRTOS Task Example\r\n"); // Send a string over UART
+
+    // UART_Receiver(UART_PORT_5); // Polling and Interrupts
     // Create FreeRTOS tasks
     // These tasks will toggle PF1 and PF2 at a rate of 1 Hz
     // The tasks will run concurrently, allowing both LEDs to blink independently

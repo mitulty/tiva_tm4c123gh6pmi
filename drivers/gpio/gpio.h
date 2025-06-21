@@ -2,6 +2,7 @@
 #define GPIO_H
 
 #include "stdint.h"
+#include "sysctl_registers.h"
 
 /**
  * @file gpio.h
@@ -46,11 +47,6 @@ void GPIO_SetPullUpPin(GPIO_Port port, GPIO_Pin pin, int enable);
 void GPIO_SetPullDownPin(GPIO_Port port, GPIO_Pin pin, int enable);
 void GPIO_SetPin(GPIO_Port port, GPIO_Pin pin, int value);
 void GPIO_SetDirection(GPIO_Port port, GPIO_Pin pin, int direction);
-
-/**
- * GPIO Clock Control Register
- */
-#define SYSCTL_RCGCGPIO_R (*((volatile unsigned long *)0x400FE608))
 
 //*****************************************************************************
 //

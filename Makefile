@@ -10,11 +10,11 @@ SYMBOL    = arm-none-eabi-nm
 # Directories and includes
 SRCS_DIR := firmware firmware/ivt firmware/nvic firmware/systick startup_code 
 SRCS_DIR += lib/FreeRTOS-Kernel/portable/MemMang lib/FreeRTOS-Kernel lib/FreeRTOS-Kernel/portable/GCC/ARM_CM4F
-SRCS_DIR += drivers/gpio
+SRCS_DIR += drivers/gpio drivers/uart
 
 INCLUDES := -Ifirmware -Ifirmware/ivt -Ifirmware/nvic -Ifirmware/systick
 INCLUDES += -Ilib/FreeRTOS-Kernel/portable/GCC/ARM_CM4F -Ilib/FreeRTOS-Kernel/include
-INCLUDES += -Idrivers/gpio
+INCLUDES += -Idrivers/gpio -Idrivers -Idrivers/uart
 OBJ_DIR = obj
 
 # Flags
